@@ -15,12 +15,6 @@ Features
   process to stop and release any ports before starting the next [3]_.
 * Notifies by email [4]_, IRC [5]_ or HTTP [6]_ when the process restarts.
 
-.. [1] Timestamps in log files not implemented yet.
-.. [2] Daemonising not implemented yet.
-.. [3] Graceful restarts not implemented yet.
-.. [4] Email notifications not implemented yet.
-.. [5] IRC notifications not implemented yet.
-.. [6] HTTP notifications not implemented yet.
 
 Usage
 -----
@@ -42,3 +36,12 @@ Installation
 .. code:: sh
 
     pip install stoic
+
+----
+
+.. [1] Timestamps in log files not implemented yet.
+.. [2] Daemonising not implemented yet.
+.. [3] Graceful restarts not implemented yet.
+.. [4] Email notifications not implemented yet.
+.. [5] IRC notifications not implemented yet.
+.. [6] HTTP notifications not implemented yet.
