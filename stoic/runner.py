@@ -27,9 +27,9 @@ class Runner(object):
         self.time_last_restarted = None
         self.default_backoff_seconds = 1
         self.current_backoff_seconds = self.default_backoff_seconds
-        self.process_logger = logging.getLogger(name + "-process")
-        self.stdout_logger = logging.getLogger(name + "-stdout")
-        self.stderr_logger = logging.getLogger(name + "-stderr")
+        self.process_logger = logging.getLogger(name + "-ctl")
+        self.stdout_logger = logging.getLogger(name + "-out")
+        self.stderr_logger = logging.getLogger(name + "-err")
         self.process_condition = threading.Condition()
 
     @staticmethod

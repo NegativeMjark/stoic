@@ -41,4 +41,5 @@ setup(
     keywords="shell",
     packages=["stoic"],
     scripts=["scripts/stoic"],
+    install_requires=["pyyaml", "daemonize"],
 )
