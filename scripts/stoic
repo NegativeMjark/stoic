@@ -16,9 +16,26 @@
 import stoic.runner
 import argparse
 import time
-import logging
+import logging.config
+import yaml
 
-logging.basicConfig(level=logging.INFO)
+
+logging.config.dictConfig(yaml.load("""
+version: 1
+root:
+  handlers:
+  - console
+  level: INFO
+handlers:
+  console:
+    class: logging.StreamHandler
+    formatter: console
+    level: INFO
+formatters:
+  console:
+    (): stoic.log.Iso8601Formatter
+    format: '%(asctime)s|%(levelname)s|%(name)s|%(message)s'
+"""))
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -29,6 +46,7 @@ options = parser.parse_args()
 runner = stoic.runner.Runner("main", options.arguments)
 
 runner.start()
+
 try:
     while True:
         time.sleep(60 * 60 * 24)

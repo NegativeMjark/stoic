@@ -9,7 +9,7 @@ Features
 * Restarts your process when it dies.
 * Doesn't tightloop if your process immediately dies again.
 * Captures stdout and stderr from your process and logs them with
-  timestamps [1]_.
+  timestamps.
 * Can be run in the background as a daemon [2]_.
 * Gracefully move between different stoic processses, waiting for the previous
   process to stop and release any ports before starting the next [3]_.
@@ -39,7 +39,6 @@ Installation
 
 ----
 
-.. [1] Timestamps in log files not implemented yet.
 .. [2] Daemonising not implemented yet.
 .. [3] Graceful restarts not implemented yet.
 .. [4] Email notifications not implemented yet.
