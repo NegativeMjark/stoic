@@ -37,7 +37,7 @@ class Runner(object):
         try:
             line = pipe.readline()
             while line:
-                logger.log(level, line[:-1].replace("%","%%"))
+                logger.log(level, line.rstrip('\n').replace("%","%%"))
                 line = pipe.readline()
         except:
             pass
