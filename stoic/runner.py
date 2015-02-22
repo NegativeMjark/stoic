@@ -58,7 +58,7 @@ class Runner(object):
         )
         stderr_thread = threading.Thread(
             target=self.log_from_pipe,
-            args=(process.stderr, self.stderr_logger, logging.ERROR),
+            args=(process.stderr, self.stderr_logger, logging.INFO),
         )
         stdout_thread.start()
         stderr_thread.start()
