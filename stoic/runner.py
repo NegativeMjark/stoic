@@ -117,9 +117,13 @@ class Runner(object):
                     self.process_logger.info("Shutting down, not restarting")
                     break
                 elif self.time_last_restarted is not None:
-                    self.process_logger.info("Restarting process")
+                    self.process_logger.info(
+                        "Restarting process %r", self.arguments
+                    )
                 else:
-                    self.process_logger.info("Starting process")
+                    self.process_logger.info(
+                        "Starting process %r", self.arguments
+                    )
 
             code = self.run_once()
 

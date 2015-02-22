@@ -17,16 +17,29 @@ import stoic.runner
 import stoic.log
 import argparse
 import time
-import logging.config
+import logging
+import os
 
 
-stoic.log.console_config()
+logger = logging.getLogger("stoic")
+
+stoic.log.console_handler()
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
-    "arguments", metavar="ARG", nargs='+', help="program arguments"
+    "arguments", metavar="ARG", nargs='+', help="program arguments",
 )
+parser.add_argument(
+    "--log-file", metavar="LOG_FILE",
+    help="write logs to file, logs are rotated daily"
+)
+
 options = parser.parse_args()
+
+if options.log_file is not None:
+    log_file = os.path.abspath(options.log_file)
+    logger.info("Writing logs to %r", log_file)
+    stoic.log.rotating_file_handler(log_file, when="D", backupCount=10)
 
 runner = stoic.runner.Runner("main", options.arguments)
 
