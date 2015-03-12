@@ -15,6 +15,7 @@
 
 import stoic.runner
 import stoic.log
+import stoic.daemon
 import argparse
 import time
 import logging
@@ -33,22 +34,53 @@ parser.add_argument(
     "--log-file", metavar="LOG_FILE",
     help="write logs to file, logs are rotated daily"
 )
+parser.add_argument(
+    "--start", action="store_true",
+    help="Run in background as a daemon"
+)
+parser.add_argument(
+    "--socket", metavar="CONTROL_SOCKET", default="stoic.socket",
+    help="Control socket when running as a daemon"
+)
+parser.add_argument(
+    "--replace", action="store_true",
+    help="Replace a running daemon"
+)
+parser.add_argument(
+    "--stop", action="store_true",
+    help="Stop a running daemon"
+)
 
 options = parser.parse_args()
+
+if options.start or options.replace:
+    if options.log_file is None:
+        options.log_file = "stoic.log"
+
+keep_fds = []
 
 if options.log_file is not None:
     log_file = os.path.abspath(options.log_file)
     logger.info("Writing logs to %r", log_file)
-    stoic.log.rotating_file_handler(log_file, when="D", backupCount=10)
+    h = stoic.log.rotating_file_handler(log_file, when="D", backupCount=10)
+    keep_fds.append(h.stream.fileno())
 
 runner = stoic.runner.Runner("main", options.arguments)
+daemon = stoic.daemon.Daemon("main", options.socket, keep_fds)
+daemon.setup = runner.start
+daemon.teardown = runner.shutdown
 
-runner.start()
+if options.replace or options.stop:
+    daemon.stop()
 
-try:
-    while True:
-        time.sleep(60 * 60 * 24)
-except KeyboardInterrupt:
-    pass
-finally:
-    runner.shutdown()
+if options.replace or options.start:
+    daemon.start()
+elif not options.stop:
+    runner.start()
+    try:
+        while True:
+            time.sleep(60 * 60 * 24)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        runner.shutdown()

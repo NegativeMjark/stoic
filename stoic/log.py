@@ -27,3 +27,4 @@ def rotating_file_handler(filename, level=logging.INFO,
     handler.setFormatter(Iso8601Formatter(fmt=DEFAULT_FORMAT))
     logger.setLevel(level)
     logger.addHandler(handler)
+    return handler

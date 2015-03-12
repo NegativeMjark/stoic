@@ -1,4 +1,17 @@
 # #!/usr/bin/python
+# Copyright 2015 Mark Haines
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 import fcntl
 import os
@@ -7,10 +20,10 @@ import resource
 import logging
 import socket
 import errno
-from contextlib import contextmanager, closing
+import contextlib
 
 
-@contextmanager
+@contextlib.contextmanager
 def lockfile(path):
     path = os.path.abspath(path)
     fd = os.open(path, os.O_CREAT | os.O_RDWR)
@@ -28,11 +41,10 @@ class DaemonError(Exception):
 
 
 class Daemon(object):
-    """ Daemonize object
-    Object constructor expects three arguments:
-    - app: contains the application name which will be sent to syslog.
-    - pid: path to control socket.
-    - action: your custom function which will be executed after daemonization.
+    """ Daemon object
+    Object constructor expects two arguments:
+    - app: contains the application name used for logging
+    - socket_file: path to control socket.
     - keep_fds: optional list of fds which should not be closed.
     """
     def __init__(self, name, socket_file, keep_fds=None, logger=None,
@@ -48,7 +60,7 @@ class Daemon(object):
         self.startup_lock_file = os.path.abspath(startup_lock_file)
 
     def check_if_already_running(self):
-        with closing(socket.socket(socket.AF_UNIX)) as client:
+        with contextlib.closing(socket.socket(socket.AF_UNIX)) as client:
             try:
                 client.connect(self.socket_file)
                 self.logger.error(
@@ -80,18 +92,23 @@ class Daemon(object):
             connection.close()
 
     def stop(self):
-        with closing(socket.socket(socket.AF_UNIX)) as client:
-            client.connect(self.socket_file)
+        with contextlib.closing(socket.socket(socket.AF_UNIX)) as client:
+            try:
+                client.connect(self.socket_file)
+            except socket.error as error:
+                if error.errno == errno.ENOENT:
+                    raise DaemonError("Daemon isn't running")
+                else:
+                    raise
             client.send("\x00")
             client.recv(1)
-
 
     def start(self):
         """ start method
         Main daemonization process.
         """
 
-        with closing(socket.socket(socket.AF_UNIX)) as server:
+        with contextlib.closing(socket.socket(socket.AF_UNIX)) as server:
             with lockfile(self.startup_lock_file):
                 try:
                     server.bind(self.socket_file)
