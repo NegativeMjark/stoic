@@ -1,0 +1,8 @@
+In no particular order:
+
+* Notifications (HTTP/SMTP/IRC/etc)
+* Ratelimit log output to prevent diskfills/IO spikes.
+* Add SIGUSR1 signal handler to recreate the control socket in case the control
+  socket gets deleted.
+* Collect memory usage and CPU usage information about processes and supply
+  them to something like statsd.
